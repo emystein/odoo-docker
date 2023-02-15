@@ -1,0 +1,9 @@
+.vagrant
+.idea
+*.log
+odoo
+enterprise
+volume/*
+*.pyc
+
+

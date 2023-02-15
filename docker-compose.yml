@@ -1,0 +1,39 @@
+services:
+  odoo:
+    build: ./box
+    depends_on:
+      - db
+      - smtp
+    ports:
+      - "8069:8069"
+    volumes:
+      - .:/opt/odoo
+      - odoo_data:/root/.local/share/Odoo
+    command: bash -c "$${PYTHON_PATH} $${START_ODOO} $${ODOO_PARAM} && tail -f /dev/null"
+    environment:
+      PYTHON_PATH: "/usr/local/bin/python3"
+      START_ODOO: "/opt/odoo/odoo/odoo-bin -c /opt/odoo/odoo.conf"
+      ODOO_PARAM: ""
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+  smtp:
+    image: gessnerfl/fake-smtp-server
+    ports:
+      - "5080:5080"
+      - "5081:5081"
+      - "5025:5025"
+    environment:
+      - fakesmtp_authentication_username=admin
+      - fakesmtp_authentication_password=admin
+
+volumes:
+  odoo_data:
+  postgres_data:
